@@ -123,11 +123,7 @@ tokens { INDENT, DEDENT, BOF }
 }
 
 tests
-	: (singleStatement)+
-	;
-
-singleStatement
-	: statement (EMPTYLINE |EOF)
+	: statement (EMPTYLINE statement)* EOF
 	;
 
 relations
