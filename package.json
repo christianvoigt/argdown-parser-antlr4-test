@@ -1,0 +1,23 @@
+{
+  "name": "argdown-parser-antlr4-test",
+  "version": "0.0.1",
+  "description": "ANTLR4 Argdown Parser",
+  "main": "./lib/index.js",
+  "scripts": {
+    "build": "npm run build:antlr4 && npm run build:js",
+    "build:antlr4": "java -cp ./antlr4/antlr-4.6-complete.jar org.antlr.v4.Tool -Dlanguage=JavaScript -o ./lib ./src/Argdown.g4",
+    "build:js": "cpx './src/**/*.{js,argdown,ad}' ./lib",
+    "test": "mocha --colors ./test/*.spec.js",
+    "prepublish": "npm build"
+  },
+  "author": "Christian Voigt",
+  "license": "MIT",
+  "dependencies": {
+    "antlr4": "^4.6.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "cpx": "^1.5.0",
+    "mocha": "^3.2.0"
+  }
+}
