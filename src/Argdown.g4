@@ -123,7 +123,7 @@ tokens { INDENT, DEDENT, BOF }
 }
 
 tests
-	: statement (EMPTYLINE statement)* EOF
+	: statement (EMPTYLINE statement)* EMPTYLINE? EOF
 	;
 
 relations
