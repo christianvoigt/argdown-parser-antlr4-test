@@ -3,7 +3,13 @@
   "version": "0.0.1",
   "description": "ANTLR4 Argdown Parser",
   "main": "./lib/index.js",
-  "scripts": {
+  "files": [
+    "lib/**/*.js",
+    "lib/**/*.argdown",
+    "readme.md",
+    "LICENSE.TXT"
+  ],
+    "scripts": {
     "build": "npm run build:antlr4 && npm run build:js",
     "build:antlr4": "java -cp ./antlr4/antlr-4.6-complete.jar org.antlr.v4.Tool -Dlanguage=JavaScript -o ./lib ./src/Argdown.g4",
     "build:js": "cpx './src/**/*.{js,argdown,ad}' ./lib",
