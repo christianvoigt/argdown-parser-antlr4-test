@@ -9,9 +9,9 @@ describe("Parser", function() {
   it("can parse", function(){
     var filePath = path.join(__dirname, 'test.argdown');
     var input = fs.readFileSync(filePath, 'utf8');
-    //var tree = ArgdownParser.parse(input);
+    var tree = ArgdownParser.parse(input);
     //ArgdownParser.printAst(tree);
-    ArgdownParser.printTokens(input);
+    //ArgdownParser.printTokens(input);
     //expect(tree.children).to.be.an('array');
   });
 });
