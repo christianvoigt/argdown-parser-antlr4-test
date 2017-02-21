@@ -14,7 +14,6 @@ WS=13
 CHAR=14
 INDENT=15
 DEDENT=16
-BOF=17
 ':'=1
 '<'=2
 '>'=3

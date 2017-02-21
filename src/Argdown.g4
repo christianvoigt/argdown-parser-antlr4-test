@@ -1,35 +1,46 @@
 grammar Argdown;
 
-tokens { INDENT, DEDENT, BOF }
+tokens { INDENT, DEDENT }
 
 @lexer::members {
   var ArgdownParser = require("./ArgdownParser.js");
   //var antlr4 = require("antlr4");
-  // A queue where extra tokens are pushed on (see the NEWLINE lexer rule).
-  var tokens = [];
+  // A queue where extra tokenStack are pushed on (see the NEWLINE lexer rule).
+  Object.defineProperty(ArgdownLexer.prototype, "tokenStack", {
+  	get : function() {
+      if(this._tokenStack == null)
+        this._tokenStack = [];
+  		return this._tokenStack;
+  	},
+    set : function(arr){
+      this._tokenStack = [];
+    }
+  });
   // The stack that keeps track of the indentation level.
-  var indents = [];
-  // The amount of opened braces, brackets and parenthesis.
-  var opened = 0;
-  // The most recently produced token.
-  var lastToken = null;
+  Object.defineProperty(ArgdownLexer.prototype, "indentStack", {
+  	get : function() {
+      if(this._indentStack == null)
+        this._indentStack = [];
+  		return this._indentStack;
+  	}
+  });
 
-  var superFunctions = {
+  ArgdownLexer.prototype.superFunctions = {
     emit: ArgdownLexer.prototype.emit,
     nextToken: ArgdownLexer.prototype.nextToken
   };
 
   ArgdownLexer.prototype.emit = function(t) {
     if(!t){
-      return superFunctions.emit.call(this);
+      return this.superFunctions.emit.call(this);
     }
     //this.setToken(t);
     //this.emitToken(t);
-    tokens.push(t);
+    this.tokenStack.push(t);
     return t;
   };
   ArgdownLexer.prototype.nextToken = function() {
-    var next = superFunctions.nextToken.call(this);
+    var next = this.superFunctions.nextToken.call(this);
 
     if(next.type == ArgdownLexer.EOF){
       this.emitRemainingDedents();
@@ -39,14 +50,14 @@ tokens { INDENT, DEDENT, BOF }
         // Keep track of the last token on the default channel.
         lastToken = next;
       }*/
-    tokens.push(next);
-    return tokens.splice(0, 1)[0];
+    this.tokenStack.push(next);
+    return this.tokenStack.splice(0, 1)[0];
   }
 
   ArgdownLexer.prototype.emitRemainingDedents = function(){
-      while (indents.length > 0) {
+      while (this.indentStack.length > 0) {
         this.emit(this.createDedent());
-        indents.splice(indents.length-1, 1);
+        this.indentStack.splice(this.indentStack.length-1, 1);
       }
   };
 
@@ -60,16 +71,16 @@ tokens { INDENT, DEDENT, BOF }
    var relation = tokenText.replace(/[\r\n'  '\t]+/g, '');
 
 	 //var next = this._input.LA(1);
-	 var indent = getIndentationCount(spaces);
-	 var previous = indents.length == 0 ? 0 : indents[indents.length - 1];
+	 var indent = this.getIndentationCount(spaces);
+	 var previous = this.indentStack.length == 0 ? 0 : this.indentStack[this.indentStack.length - 1];
    if (indent > previous) {
-	   indents.push(indent);
+	   this.indentStack.push(indent);
 	   this.emit(this.commonToken(ArgdownParser.ArgdownParser.INDENT, ''));
 	 }else if(indent < previous){
 	   // Possibly emit more than 1 DEDENT token.
-	   while(!indents.length == 0 && indents[indents.length - 1] > indent) {
+	   while(!this.indentStack.length == 0 && this.indentStack[this.indentStack.length - 1] > indent) {
 	     this.emit(this.createDedent());
-	     indents.splice(indents.length - 1, 1);
+	     this.indentStack.splice(this.indentStack.length - 1, 1);
 	   }
 	 }
 	 //this.emit(this.commonToken(relationType,tokenText));
@@ -91,7 +102,7 @@ tokens { INDENT, DEDENT, BOF }
     return t;
   }
 
-  var getIndentationCount = function(spaces) {
+  ArgdownLexer.prototype.getIndentationCount = function(spaces) {
 
     var count = 1;
     var previousCharWasSpace = false;
